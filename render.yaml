@@ -1,0 +1,7 @@
+services:
+  - type: worker
+    name: telegram-bot
+    runtime: python
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.13
