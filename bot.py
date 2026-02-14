@@ -6,7 +6,7 @@ BOT_TOKEN = "8037000962:AAHlRWkhL3XAWWdWUZo7WeR0zUl3qQQWxAU"
 ADMINS = [8334124528]  # add more admin ids
 UPI_ID = "7043592870@nyes"
 
-CHANNELS = ["https://t.me/piyush_a2z_tricks", "@ch2", "@ch3"]
+CHANNELS = ["@piyush_a2z_tricks", "@ch2", "@ch3"]
 
 bot = telebot.TeleBot(BOT_TOKEN)
 
