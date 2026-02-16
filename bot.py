@@ -2,15 +2,15 @@ import telebot
 import sqlite3
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 
+# ===== CONFIG =====
 BOT_TOKEN = "8037000962:AAHlRWkhL3XAWWdWUZo7WeR0zUl3qQQWxAU"
-ADMINS = [8334124528]
-UPI_ID = "yourupi@upi"
-CHANNELS = ["@ch1", "@ch2", "@ch3"]
+ADMINS = [8334124528]  # apna telegram user id daalo
+CHANNELS = ["@piyush_a2z_tricks", "@channel2", "@channel3"]
 
 bot = telebot.TeleBot(BOT_TOKEN)
 
 # ===== DATABASE =====
-conn = sqlite3.connect("shop.db", check_same_thread=False)
+conn = sqlite3.connect("bot.db", check_same_thread=False)
 cur = conn.cursor()
 
 cur.execute("""
@@ -38,33 +38,35 @@ def is_admin(uid):
 def joined(uid):
     for ch in CHANNELS:
         try:
-            m = bot.get_chat_member(ch, uid)
-            if m.status not in ["member","administrator","creator"]:
+            member = bot.get_chat_member(ch, uid)
+            if member.status not in ["member", "administrator", "creator"]:
                 return False
         except:
             return False
     return True
 
+# ===== JOIN MENU =====
+def join_menu():
+    kb = InlineKeyboardMarkup()
+    for ch in CHANNELS:
+        kb.add(InlineKeyboardButton("📢 Join Channel", url=f"https://t.me/{ch[1:]}"))
+    kb.add(InlineKeyboardButton("✅ Verify", callback_data="verify"))
+    return kb
+
 # ===== START =====
 @bot.message_handler(commands=['start'])
 def start(msg):
 
-    args = msg.text.split()
-
     if not joined(msg.from_user.id):
-        kb = InlineKeyboardMarkup()
-        for ch in CHANNELS:
-            kb.add(InlineKeyboardButton("📢 Join", url=f"https://t.me/{ch[1:]}"))
-        kb.add(InlineKeyboardButton("✅ Verify", callback_data="verify"))
-
         bot.send_message(
             msg.chat.id,
-            "🔒 Join all channels first:",
-            reply_markup=kb
+            "🔒 Bot use karne ke liye sab channel join karo:",
+            reply_markup=join_menu()
         )
         return
 
-    # referral safe parse
+    args = msg.text.split()
+
     ref = None
     if len(args) > 1:
         try:
@@ -94,33 +96,35 @@ def start(msg):
         f"🔥 Welcome!\n\n👥 Referral link:\n{link}\nEarn ₹10 per join!"
     )
 
-# ===== VERIFY =====
+# ===== VERIFY BUTTON =====
 @bot.callback_query_handler(func=lambda c: c.data == "verify")
 def verify(c):
     if joined(c.from_user.id):
         bot.edit_message_text(
-            "✅ Verified! Use /start",
+            "✅ Verified! Ab /start dabao",
             c.message.chat.id,
             c.message.message_id
         )
     else:
         bot.answer_callback_query(
             c.id,
-            "❌ Join all first",
+            "❌ Pehle sab channel join karo",
             show_alert=True
         )
 
 # ===== WALLET =====
 @bot.message_handler(commands=['wallet'])
 def wallet(msg):
+
     cur.execute(
         "SELECT wallet FROM users WHERE user_id=?",
         (msg.from_user.id,)
     )
-    w = cur.fetchone()
-    bal = w[0] if w else 0
 
-    bot.send_message(msg.chat.id, f"💰 Wallet: ₹{bal}")
+    w = cur.fetchone()
+    balance = w[0] if w else 0
+
+    bot.send_message(msg.chat.id, f"💰 Wallet Balance: ₹{balance}")
 
 # ===== COUPON USE =====
 @bot.message_handler(commands=['use'])
@@ -145,11 +149,12 @@ def use_coupon(msg):
         "UPDATE users SET wallet=wallet+? WHERE user_id=?",
         (c[0], msg.from_user.id)
     )
+
     conn.commit()
 
     bot.send_message(msg.chat.id, f"✅ Coupon applied! +₹{c[0]}")
 
-# ===== ADMIN COUPON =====
+# ===== ADMIN COUPON CREATE =====
 @bot.message_handler(commands=['coupon'])
 def coupon(msg):
 
@@ -165,15 +170,16 @@ def coupon(msg):
     code = parts[1]
 
     try:
-        amt = int(parts[2])
+        amount = int(parts[2])
     except:
-        bot.send_message(msg.chat.id, "Amount must be number")
+        bot.send_message(msg.chat.id, "Amount number hona chahiye")
         return
 
     cur.execute(
-        "INSERT OR REPLACE INTO coupons VALUES (?,?)",
-        (code, amt)
+        "INSERT OR REPLACE INTO coupons VALUES (?, ?)",
+        (code, amount)
     )
+
     conn.commit()
 
     bot.send_message(msg.chat.id, "✅ Coupon created")
@@ -202,5 +208,5 @@ def broadcast(msg):
     bot.send_message(msg.chat.id, f"✅ Broadcast sent: {sent}")
 
 # ===== RUN =====
-print("Bot running safe mode...")
+print("Bot running successfully...")
 bot.infinity_polling()
