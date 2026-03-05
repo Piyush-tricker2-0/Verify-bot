@@ -4,7 +4,7 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, MessageHandler, filters, ContextTypes
 
 # --- CONFIGURATION ---
-TOKEN = "YOUR_BOT_TOKEN"
+TOKEN = "8037000962:AAHlRWkhL3XAWWdWUZo7WeR0zUl3qQQWxAU"
 ADMIN_ID = 123456789  # Apni ID yahan daalein
 LOG_CHANNEL_ID = -100123456789 # Notification channel ki ID
 
