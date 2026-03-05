@@ -5,8 +5,8 @@ from telegram.ext import Application, CommandHandler, CallbackQueryHandler, Mess
 
 # --- CONFIGURATION ---
 TOKEN = "8037000962:AAHlRWkhL3XAWWdWUZo7WeR0zUl3qQQWxAU"
-ADMIN_ID = 123456789  # Apni ID yahan daalein
-LOG_CHANNEL_ID = -100123456789 # Notification channel ki ID
+ADMIN_ID = 8334124528  # Apni ID yahan daalein
+LOG_CHANNEL_ID = -@bkc_zone1312 # Notification channel ki ID
 
 # Prices
 PRICE_FB_NORMAL = 20
